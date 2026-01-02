@@ -92,14 +92,11 @@ int main(){
 			percentage = 100.0 * (diffTotal - diffIdle)/diffTotal;
 		}
 
-		cout << "\rLoad CPU usage: " << fixed << setprecision(1) << percentage << "%  " << flush;
-		prev = curr;
-
 		RAMData ram = getRAMUsage();
-		double used = (ram.total - ram.av) / 1024.0 / 1024.0;
-		double total = ram.total / 1024.0 / 1024.0;
-		cout << "\n";
-		cout << "\rLoad RAM usage: " << fixed << setprecision(1) << used << " / " << total << " GB" << flush;
+		double used = 100.0 *  (ram.total - ram.av) / ram.total;
+
+		cout << "\rLoad CPU usage: " << fixed << setprecision(1) << percentage << "%" << "||| RAM: "<< fixed << setprecision(1) << used << "%" <<flush;
+		prev = curr;
 	}
 	return 0;
 }
