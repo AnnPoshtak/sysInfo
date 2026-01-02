@@ -25,28 +25,38 @@ CPUData getState() {
 	return {total, idle};
 }
 
-int main(){
-	CPUData prev = getState();
+st getProcName(){
 	ifstream file("/proc/cpuinfo");
 
 	if (!file.is_open()){
 		cerr << "Could not open /proc/cpuinfo";
-		return 1;
+		return "error";
 	}
-
-
 
 	st line;
-	const st findProcName = "model name";
+	const st find = "model name";
 	st procName = "NOT FOUND";
 	while (getline(file, line)){
-		if (line.starts_with(findProcName)){
-			procName = line;
-			break;
+		if (line.find(find) != st::npos){
+			procName = "";
+			bool stat = false;
+			for (char c: line){
+				if (c == ':'){
+					stat = true;
+				}
+				if (stat){
+					procName+=c;
+				}
+			}
 		}
 	}
+	return procName;
+}
 
-	cout << procName << "\n";
+int main(){
+	CPUData prev = getState();
+	const st procName = getProcName();
+	cout << "Proc name" << procName << "\n";
 
 	while (true){
 		usleep(500000);
@@ -64,12 +74,5 @@ int main(){
 		cout << "\rLoad CPU usage: " << fixed << setprecision(1) << percentage << "%  " << flush;
 		prev = curr;
 	}
-	return 0;
-
-
-
-
-
-
 	return 0;
 }
