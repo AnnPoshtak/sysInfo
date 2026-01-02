@@ -12,6 +12,10 @@ struct CPUData {
 	long long total, idle;
 };
 
+struct RAMData {
+	long total, av;
+};
+
 CPUData getState() {
 	ifstream file("/proc/stat");
 	st cpuLabel;
@@ -53,6 +57,23 @@ st getProcName(){
 	return procName;
 }
 
+RAMData getRAMUsage(){
+	ifstream file("/proc/meminfo");
+	st key;
+	long long value;
+	long long total=0, availabel=0;
+
+	while (file >> key >> value){
+		if (key == "MemTotal:") total = value;
+		else if (key == "MemAvailable:"){
+			availabel = value;
+			break;
+		}
+	}
+
+	return {total, availabel};
+}
+
 int main(){
 	CPUData prev = getState();
 	const st procName = getProcName();
@@ -73,6 +94,12 @@ int main(){
 
 		cout << "\rLoad CPU usage: " << fixed << setprecision(1) << percentage << "%  " << flush;
 		prev = curr;
+
+		RAMData ram = getRAMUsage();
+		double used = (ram.total - ram.av) / 1024.0 / 1024.0;
+		double total = ram.total / 1024.0 / 1024.0;
+		cout << "\n";
+		cout << "\rLoad RAM usage: " << fixed << setprecision(1) << used << " / " << total << " GB" << flush;
 	}
 	return 0;
 }
