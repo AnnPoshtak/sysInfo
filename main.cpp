@@ -13,7 +13,7 @@ struct CPUData {
 };
 
 struct RAMData {
-	long total, av;
+	long long  total, av;
 };
 
 CPUData getState() {
@@ -59,11 +59,11 @@ st getProcName(){
 
 RAMData getRAMUsage(){
 	ifstream file("/proc/meminfo");
-	st key;
+	st key,kb;
 	long long value;
 	long long total=0, availabel=0;
 
-	while (file >> key >> value){
+	while (file >> key >> value >> kb){
 		if (key == "MemTotal:") total = value;
 		else if (key == "MemAvailable:"){
 			availabel = value;
